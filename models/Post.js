@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
-const User = require('./User.js')
 
+// Blog post schema
 const postSchema = mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    postedby: {
+        type: String,
+        require: true,
+        min: 1,
+        max: 255
     },
     header: {
         type: String,
@@ -20,7 +22,7 @@ const postSchema = mongoose.Schema({
     },
     img_url: {
         type: String,
-        require: true,
+        require: false,
         min: 8,
         max: 255
     }
@@ -29,26 +31,13 @@ const postSchema = mongoose.Schema({
     collection: 'posts'
 });
 
-// finds all posts with given username
-postSchema.methods.findByUserName = async (username) => {
-    const posts = await post.user.find({username});
-
-    return posts;
-};
-
-// finds post by id
-postSchema.methods.findById = async (id) => {
-    const post = await post.user.findById(id);
-
-    return post;
-};
 
 // finds all posts with similar string in header or in content
-postSchema.methods.find = async (string) => {
-    const posts = await post.find(
-        {header : new RegExp(string, "i")},
-        {content : new RegExp(string, "i")}
-    );
+postSchema.statics.findSimilar = async (search_query) => {
+    const posts = await Post.find({
+        header: new RegExp(search_query, 'i'),
+        content: new RegExp(search_query, 'i')
+    });
 
     return posts;
 };
