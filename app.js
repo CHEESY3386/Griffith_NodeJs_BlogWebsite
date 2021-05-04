@@ -1,5 +1,5 @@
 const express = require('express');
-const userRouter = require('./routers/users.js');
+const userRouter = require('./routers/user.js');
 const blogRouter = require('./routers/blog.js');
 
 require('dotenv').config(); // so the app knows how to locate the .env file
@@ -12,7 +12,6 @@ const app = express();
 app.use(express.json());
 app.use(userRouter);
 app.use(blogRouter);
-app.use(mdb);
 
 // Run server
 app.listen(process.env.PORT, () => {

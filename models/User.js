@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
-const userSchema = new mongoose.Schema({
+const userSchema = mongoose.Schema({
     username: {
         type: String,
         require: true,
@@ -39,11 +41,15 @@ const userSchema = new mongoose.Schema({
             require: true
         }]
     }]
-}, {timestamps: true});
+}, {
+    timestamps: true,
+    collection: 'users'
+});
 
 // middleware function for encrypting password
 userSchema.pre('save', async function (next) {
     const user = this;
+
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
     }
@@ -52,13 +58,13 @@ userSchema.pre('save', async function (next) {
 
 // generates a json web token
 userSchema.methods.generateAuthToken = async function() {
-    const user = this;
-    const token = jwt.sign({_id: user._id}, process.env.JWT_KEY);
+    const user = this
+    const token = jwt.sign({_id: user._id}, process.env.JWT_KEY)
 
-    user.tokens = user.tokens.concat({token});
-    await user.save();
-    return token;
-};
+    user.tokens = user.tokens.concat({token})
+    await user.save()
+    return token
+}
 
 // finds user with given email and password
 userSchema.statics.findByCredentials = async (email, password) => {
@@ -72,20 +78,6 @@ userSchema.statics.findByCredentials = async (email, password) => {
         throw new Error({ error: 'Invalid login credentials' });
     }
     return user;
-};
-
-// finds and deletes user
-userSchema.statics.delete = async (email, password) => {
-    const user = findByCredentials(email, password);
-
-    await user.deleteOne({email});
-};
-
-// updates user credentials
-userSchema.statics.update = async (username, email, password, img_url) => {
-    const user = findByCredentials(email, password);
-
-    await user.UpdateOne({username, email, password, img_url});
 };
 
 const User = mongoose.model('User', userSchema);
