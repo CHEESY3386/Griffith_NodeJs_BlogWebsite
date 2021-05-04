@@ -41,4 +41,4 @@ postSchema.statics.find = async (string) => {
 
 const Post = mongoose.model('Post', postSchema);
 
-module.exports = Post
+module.exports = Post;

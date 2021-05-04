@@ -90,4 +90,4 @@ userSchema.statics.update = async (username, email, password, img_url) => {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User
+module.exports = User;

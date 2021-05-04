@@ -4,6 +4,6 @@ var router = express.Router();
 
 router.get('/', () => {
     console.log('test')
-})
+});
 
-module.exports = router
+module.exports = router;
