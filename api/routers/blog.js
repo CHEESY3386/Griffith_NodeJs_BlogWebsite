@@ -5,7 +5,7 @@ const auth = require('../middleware/auth.js');
 const router = express.Router();
 
 // Posts a new blog post 
-router.post('/posts', auth, async(req, res) => {
+router.post('/api/posts', auth, async(req, res) => {
     try {
         const post = new Post({
             postedby: req.user.username,
@@ -13,7 +13,7 @@ router.post('/posts', auth, async(req, res) => {
             content: req.body.content,
             img_url: req.body.img_url,
         });
-        
+
         await post.save();
         res.status(201).send({ post });
     } catch (error) {
@@ -22,10 +22,16 @@ router.post('/posts', auth, async(req, res) => {
 })
 
 // Retrives posts with given params
-router.get('/posts', auth, async (req, res) => {
+router.get('/api/posts', auth, async (req, res) => {
     try {
-        const posts = await Post.findSimilar(req.query.search_query);
+        let posts;
 
+        if (req.query.search_query) {
+            posts = await Post.findSimilar(req.query.search_query);
+        } else {
+            posts = await Post.find();
+        }
+        posts = posts.slice(0, 9);
         res.send({ posts });
     } catch (error) {
         res.status(400).send(error);
@@ -33,7 +39,7 @@ router.get('/posts', auth, async (req, res) => {
 });
 
 // Retrivies all of the users posts
-router.get('/posts/me', auth, async (req, res) => {
+router.get('/api/posts/me', auth, async (req, res) => {
     try {
         const postedby = req.user.username;
         const posts = await Post.find({postedby});
@@ -45,7 +51,7 @@ router.get('/posts/me', auth, async (req, res) => {
 });
 
 // modifies the users chosen post
-router.put('/posts', auth, async(req, res) => {
+router.put('/api/posts', auth, async(req, res) => {
     try {
         const { _id, header, content, img_url } = req.body;
         const postedby = req.user.username;

@@ -5,7 +5,7 @@ const auth = require('../middleware/auth.js')
 const router = express.Router();
 
 // Create a new user
-router.post('/users', async (req, res) => {
+router.post('/api/users', async (req, res) => {
     try {
         const user = new User(req.body);
         const token = await user.generateAuthToken();
@@ -18,12 +18,12 @@ router.post('/users', async (req, res) => {
 });
 
 // Gets user's info
-router.get('/users/me', auth, async(req, res) => {
+router.get('/api/users/me', auth, async(req, res) => {
     res.send(req.user)
 })
 
 //Login a registered user
-router.post('/users/login', async(req, res) => {
+router.post('/api/users/login', async(req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findByCredentials(email, password);
@@ -39,7 +39,7 @@ router.post('/users/login', async(req, res) => {
 });
 
 // Log user out of the application
-router.post('/users/me/logout', auth, async (req, res) => {
+router.post('/api/users/me/logout', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token != req.token
@@ -52,7 +52,7 @@ router.post('/users/me/logout', auth, async (req, res) => {
 });
 
 // Log user out of all devices
-router.post('/users/me/logoutall', auth, async(req, res) => {
+router.post('/api/users/me/logoutall', auth, async(req, res) => {
     try {
         req.user.tokens.splice(0, req.user.tokens.length);
         await req.user.save();
@@ -63,7 +63,7 @@ router.post('/users/me/logoutall', auth, async(req, res) => {
 });
 
 // Delete Account
-router.delete('/users/me/', auth, async(req, res) => {
+router.delete('/api/users/me/', auth, async(req, res) => {
     try {
         const email = req.user.email;
     
