@@ -1,7 +1,7 @@
 <template>
 <div>
 <p>Finished Back-end</p>
-<p>Unfinished front-end (working login and account creation)</p>
+<p>Unfinished front-end (working login and account creation only)</p>
 </div>
 </template>
 
